@@ -1,6 +1,8 @@
 package com.github.jbrasileiro.jwms;
 
+import com.github.jbrasileiro.jwms.i18n.JwmsI18n;
 import java.io.IOException;
+import java.util.ResourceBundle;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -11,12 +13,15 @@ public class JavaWriterManuscriptApplication extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
-        stage.setTitle("JWMS — Java Writer Manuscript");
+        ResourceBundle bundle = JwmsI18n.bundle();
+        stage.setTitle(bundle.getString("app.title"));
 
         FXMLLoader loader =
-                new FXMLLoader(JavaWriterManuscriptApplication.class.getResource("MainView.fxml"));
+                new FXMLLoader(
+                        JavaWriterManuscriptApplication.class.getResource("MainView.fxml"), bundle);
         Parent root = loader.load();
         MainViewController controller = loader.getController();
+        controller.setResourceBundle(bundle);
         controller.setStage(stage);
 
         stage.setScene(new Scene(root, 960, 600));

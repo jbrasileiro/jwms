@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox
+    xmlns="http://javafx.com/javafx/21"
+    xmlns:fx="http://javafx.com/fxml/1"
+    fx:controller="com.github.jbrasileiro.jwms.SettingsDialogController"
+    spacing="10.0"
+>
+    <padding>
+        <Insets
+            bottom="16.0"
+            left="16.0"
+            right="16.0"
+            top="16.0" />
+    </padding>
+    <Label text="%settings.locale.label" />
+    <ComboBox
+        fx:id="localeCombo"
+        prefWidth="360.0" />
+</VBox>
