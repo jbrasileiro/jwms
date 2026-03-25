@@ -1,0 +1,5 @@
+FROM eclipse-temurin:21-jdk-jammy
+WORKDIR /w
+COPY . .
+RUN chmod +x mvnw \
+  && ./mvnw -B -Pdist -pl jwms-frontend -am package
