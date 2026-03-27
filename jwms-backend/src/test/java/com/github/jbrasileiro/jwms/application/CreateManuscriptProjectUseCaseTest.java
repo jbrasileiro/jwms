@@ -20,13 +20,13 @@ class CreateManuscriptProjectUseCaseTest {
 
     @Test
     void createsMinimalV2ZipOpenableByOpenUseCase() {
-        Path msk = tempDir.resolve("new.msk");
-        CreateManuscriptProjectResult c = create.create(msk, false);
+        Path jwms = tempDir.resolve("new.jwms");
+        CreateManuscriptProjectResult c = create.create(jwms, false);
         var ok = assertInstanceOf(CreateManuscriptProjectResult.Success.class, c);
-        assertEquals(msk, ok.path());
-        assertTrue(Files.isRegularFile(msk));
+        assertEquals(jwms, ok.path());
+        assertTrue(Files.isRegularFile(jwms));
 
-        OpenManuscriptProjectResult r = open.open(msk);
+        OpenManuscriptProjectResult r = open.open(jwms);
         var success = assertInstanceOf(OpenManuscriptProjectResult.Success.class, r);
         assertEquals(2, success.project().getFormatVersion());
         assertTrue(success.project().isZipContainer());
@@ -35,7 +35,7 @@ class CreateManuscriptProjectUseCaseTest {
 
     @Test
     void failsWhenExistsWithoutOverwrite() throws Exception {
-        Path msk = tempDir.resolve("x.msk");
+        Path msk = tempDir.resolve("x.jwms");
         Files.writeString(msk, "x");
         CreateManuscriptProjectResult c = create.create(msk, false);
         assertInstanceOf(CreateManuscriptProjectResult.Failure.class, c);
@@ -43,7 +43,7 @@ class CreateManuscriptProjectUseCaseTest {
 
     @Test
     void overwritesWhenRequested() {
-        Path msk = tempDir.resolve("y.msk");
+        Path msk = tempDir.resolve("y.jwms");
         assertInstanceOf(CreateManuscriptProjectResult.Success.class, create.create(msk, false));
         assertInstanceOf(CreateManuscriptProjectResult.Success.class, create.create(msk, true));
         assertInstanceOf(OpenManuscriptProjectResult.Success.class, open.open(msk));

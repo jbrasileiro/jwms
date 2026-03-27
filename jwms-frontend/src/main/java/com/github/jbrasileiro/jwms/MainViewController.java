@@ -1,6 +1,7 @@
 package com.github.jbrasileiro.jwms;
 
 import com.github.jbrasileiro.jwms.application.CreateManuscriptProjectUseCase;
+import com.github.jbrasileiro.jwms.domain.manuscript.ManuscriptProjectPaths;
 import com.github.jbrasileiro.jwms.application.CreateManuscriptProjectUseCase.CreateManuscriptProjectResult;
 import com.github.jbrasileiro.jwms.application.OpenManuscriptProjectUseCase;
 import com.github.jbrasileiro.jwms.application.OpenManuscriptProjectUseCase.OpenManuscriptProjectResult;
@@ -11,7 +12,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.MessageFormat;
-import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.ResourceBundle;
@@ -83,7 +83,8 @@ public final class MainViewController {
         chooser.getExtensionFilters()
                 .add(
                         new FileChooser.ExtensionFilter(
-                                bundle().getString("filechooser.manuskript.description"), "*.msk"));
+                                bundle().getString("filechooser.open.filter"),
+                                "*" + ManuscriptProjectPaths.EXTENSION));
         initialDirectoryFromLastProject().ifPresent(chooser::setInitialDirectory);
         var file = chooser.showOpenDialog(ownerStage);
         if (file == null) {
@@ -108,13 +109,14 @@ public final class MainViewController {
         chooser.getExtensionFilters()
                 .add(
                         new FileChooser.ExtensionFilter(
-                                bundle().getString("filechooser.manuskript.description"), "*.msk"));
+                                bundle().getString("filechooser.save.filter"),
+                                "*" + ManuscriptProjectPaths.EXTENSION));
         initialDirectoryFromLastProject().ifPresent(chooser::setInitialDirectory);
         File file = chooser.showSaveDialog(ownerStage);
         if (file == null) {
             return;
         }
-        Path path = ensureMskSuffix(file.toPath());
+        Path path = ensureJwmsSuffix(file.toPath());
         boolean overwrite = false;
         if (Files.exists(path)) {
             var confirm = new Alert(Alert.AlertType.CONFIRMATION);
@@ -187,10 +189,10 @@ public final class MainViewController {
                 .map(Path::toFile);
     }
 
-    private static Path ensureMskSuffix(Path path) {
+    private static Path ensureJwmsSuffix(Path path) {
         String name = path.getFileName().toString();
-        if (!name.toLowerCase(Locale.ROOT).endsWith(".msk")) {
-            return path.resolveSibling(name + ".msk");
+        if (!ManuscriptProjectPaths.endsWithProjectExtension(name)) {
+            return path.resolveSibling(name + ManuscriptProjectPaths.EXTENSION);
         }
         return path;
     }

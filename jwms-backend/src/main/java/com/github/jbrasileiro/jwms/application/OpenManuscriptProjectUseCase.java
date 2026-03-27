@@ -1,6 +1,7 @@
 package com.github.jbrasileiro.jwms.application;
 
 import com.github.jbrasileiro.jwms.domain.manuscript.ManuscriptProject;
+import com.github.jbrasileiro.jwms.domain.manuscript.ManuscriptProjectPaths;
 import com.github.jbrasileiro.jwms.infrastructure.persistence.FolderEntryLister;
 import com.github.jbrasileiro.jwms.infrastructure.persistence.FolderEntryReader;
 import com.github.jbrasileiro.jwms.infrastructure.persistence.FormatDetection;
@@ -66,13 +67,13 @@ public final class OpenManuscriptProjectUseCase {
         }
     }
 
-    private static Path resolveContentFolder(Path mskFile) {
-        Path parent = mskFile.getParent();
+    private static Path resolveContentFolder(Path projectFile) {
+        Path parent = projectFile.getParent();
         if (parent == null) {
             parent = Path.of(".");
         }
-        String fileName = mskFile.getFileName().toString();
-        String base = fileName.endsWith(".msk") ? fileName.substring(0, fileName.length() - 4) : fileName;
+        String fileName = projectFile.getFileName().toString();
+        String base = ManuscriptProjectPaths.basenameForLegacyFolderLayout(fileName);
         return parent.resolve(base);
     }
 

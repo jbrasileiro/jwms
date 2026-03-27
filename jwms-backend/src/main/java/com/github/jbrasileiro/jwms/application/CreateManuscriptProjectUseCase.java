@@ -1,5 +1,6 @@
 package com.github.jbrasileiro.jwms.application;
 
+import com.github.jbrasileiro.jwms.domain.manuscript.ManuscriptProjectPaths;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
@@ -10,7 +11,7 @@ import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-/** Cria um ficheiro .msk mínimo (ZIP Manuskript v2) no caminho indicado. */
+/** Cria um ficheiro .jwms mínimo (ZIP Manuskript v2) no caminho indicado. */
 public final class CreateManuscriptProjectUseCase {
 
     private static final String ENTRY_VERSION = "VERSION";
@@ -20,9 +21,9 @@ public final class CreateManuscriptProjectUseCase {
             "<?xml version=\"1.0\" encoding=\"UTF-8\"?><plot/>".getBytes(StandardCharsets.UTF_8);
 
     public CreateManuscriptProjectResult create(Path projectFile, boolean overwrite) {
-        if (!projectFile.getFileName().toString().toLowerCase().endsWith(".msk")) {
+        if (!ManuscriptProjectPaths.endsWithProjectExtension(projectFile.getFileName().toString())) {
             return new CreateManuscriptProjectResult.Failure(
-                    List.of("O ficheiro deve ter extensão .msk: " + projectFile));
+                    List.of("O ficheiro deve ter extensão " + ManuscriptProjectPaths.EXTENSION + ": " + projectFile));
         }
         if (Files.exists(projectFile) && !overwrite) {
             return new CreateManuscriptProjectResult.Failure(
