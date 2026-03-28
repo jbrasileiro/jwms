@@ -1,10 +1,8 @@
 package com.github.jbrasileiro.jwms;
 
-import com.github.jbrasileiro.jwms.application.CreateManuscriptProjectUseCase;
-import com.github.jbrasileiro.jwms.application.CreateManuscriptProjectUseCase.CreateManuscriptProjectResult;
-import com.github.jbrasileiro.jwms.application.OpenManuscriptProjectUseCase;
-import com.github.jbrasileiro.jwms.application.OpenManuscriptProjectUseCase.OpenManuscriptProjectResult;
-import com.github.jbrasileiro.jwms.domain.manuscript.ManuscriptProjectPaths;
+import com.github.jbrasileiro.jwms.api.CreateProjectResult;
+import com.github.jbrasileiro.jwms.api.OpenProjectResult;
+import com.github.jbrasileiro.jwms.api.ProjectFileHints;
 import com.github.jbrasileiro.jwms.prefs.JwmsPreferences;
 import com.github.jbrasileiro.jwms.ui.ProjectFileChooserHelper;
 import java.io.File;
@@ -21,9 +19,6 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 public final class WelcomeController {
-
-    private final OpenManuscriptProjectUseCase openProject = new OpenManuscriptProjectUseCase();
-    private final CreateManuscriptProjectUseCase createProject = new CreateManuscriptProjectUseCase();
 
     private AppShellController shell;
     private Stage stage;
@@ -49,8 +44,8 @@ public final class WelcomeController {
             return;
         }
         Path path = file.toPath();
-        OpenManuscriptProjectResult result = openProject.open(path);
-        if (result instanceof OpenManuscriptProjectResult.Failure f) {
+        OpenProjectResult result = JwmsServiceProvider.workspace().openProject(path);
+        if (result instanceof OpenProjectResult.Failure f) {
             var alert = new Alert(Alert.AlertType.ERROR);
             alert.initOwner(stage);
             alert.setHeaderText(bundle().getString("alert.open.error.header"));
@@ -71,7 +66,7 @@ public final class WelcomeController {
         if (file == null) {
             return;
         }
-        Path path = ensureJwmsSuffix(file.toPath());
+        Path path = ProjectFileHints.ensureProjectExtension(file.toPath());
         boolean overwrite = false;
         if (Files.exists(path)) {
             var confirm = new Alert(Alert.AlertType.CONFIRMATION);
@@ -85,8 +80,8 @@ public final class WelcomeController {
             }
             overwrite = true;
         }
-        CreateManuscriptProjectResult created = createProject.create(path, overwrite);
-        if (created instanceof CreateManuscriptProjectResult.Failure f) {
+        CreateProjectResult created = JwmsServiceProvider.workspace().createProject(path, overwrite);
+        if (created instanceof CreateProjectResult.Failure f) {
             var alert = new Alert(Alert.AlertType.ERROR);
             alert.initOwner(stage);
             alert.setHeaderText(bundle().getString("alert.new.create.error.header"));
@@ -94,10 +89,10 @@ public final class WelcomeController {
             alert.showAndWait();
             return;
         }
-        Path saved = ((CreateManuscriptProjectResult.Success) created).path();
+        Path saved = ((CreateProjectResult.Success) created).path();
         JwmsPreferences.setLastProjectPath(saved.toAbsolutePath().normalize().toString());
-        OpenManuscriptProjectResult opened = openProject.open(saved);
-        if (opened instanceof OpenManuscriptProjectResult.Failure f) {
+        OpenProjectResult opened = JwmsServiceProvider.workspace().openProject(saved);
+        if (opened instanceof OpenProjectResult.Failure f) {
             var alert = new Alert(Alert.AlertType.ERROR);
             alert.initOwner(stage);
             alert.setHeaderText(bundle().getString("alert.open.error.header"));
@@ -116,13 +111,5 @@ public final class WelcomeController {
                 .map(Path::getParent)
                 .filter(Files::isDirectory)
                 .map(Path::toFile);
-    }
-
-    private static Path ensureJwmsSuffix(Path path) {
-        String name = path.getFileName().toString();
-        if (!ManuscriptProjectPaths.endsWithProjectExtension(name)) {
-            return path.resolveSibling(name + ManuscriptProjectPaths.EXTENSION);
-        }
-        return path;
     }
 }

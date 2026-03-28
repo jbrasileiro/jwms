@@ -1,6 +1,6 @@
 package com.github.jbrasileiro.jwms;
 
-import com.github.jbrasileiro.jwms.application.OpenManuscriptProjectUseCase.OpenManuscriptProjectResult;
+import com.github.jbrasileiro.jwms.api.OpenProjectResult;
 import com.github.jbrasileiro.jwms.i18n.JwmsI18n;
 import com.github.jbrasileiro.jwms.prefs.JwmsPreferences;
 import java.io.IOException;
@@ -43,8 +43,7 @@ public final class AppShellController {
     }
 
     private void loadMainAsInitialRoot() throws IOException {
-        FXMLLoader loader =
-                new FXMLLoader(AppShellController.class.getResource("MainView.fxml"), bundle);
+        FXMLLoader loader = new FXMLLoader(AppShellController.class.getResource("MainView.fxml"), bundle);
         mainRoot = loader.load();
         mainController = loader.getController();
         mainController.setResourceBundle(bundle);
@@ -68,8 +67,8 @@ public final class AppShellController {
         mainController = null;
     }
 
-    void enterWorkspace(OpenManuscriptProjectResult result, Stage ownerStage) {
-        if (!(result instanceof OpenManuscriptProjectResult.Success)) {
+    void enterWorkspace(OpenProjectResult result, Stage ownerStage) {
+        if (!(result instanceof OpenProjectResult.Success)) {
             throw new IllegalArgumentException("expected success");
         }
         ensureMainLoaded(ownerStage);

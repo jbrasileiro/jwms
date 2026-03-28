@@ -1,10 +1,8 @@
 package com.github.jbrasileiro.jwms;
 
-import com.github.jbrasileiro.jwms.application.CreateManuscriptProjectUseCase;
-import com.github.jbrasileiro.jwms.application.CreateManuscriptProjectUseCase.CreateManuscriptProjectResult;
-import com.github.jbrasileiro.jwms.application.OpenManuscriptProjectUseCase;
-import com.github.jbrasileiro.jwms.application.OpenManuscriptProjectUseCase.OpenManuscriptProjectResult;
-import com.github.jbrasileiro.jwms.domain.manuscript.ManuscriptProjectPaths;
+import com.github.jbrasileiro.jwms.api.CreateProjectResult;
+import com.github.jbrasileiro.jwms.api.OpenProjectResult;
+import com.github.jbrasileiro.jwms.api.ProjectFileHints;
 import com.github.jbrasileiro.jwms.i18n.JwmsI18n;
 import com.github.jbrasileiro.jwms.prefs.JwmsPreferences;
 import com.github.jbrasileiro.jwms.ui.ProjectFileChooserHelper;
@@ -32,9 +30,6 @@ import javafx.stage.Stage;
 import javafx.stage.Window;
 
 public final class MainViewController {
-
-    private final OpenManuscriptProjectUseCase openProject = new OpenManuscriptProjectUseCase();
-    private final CreateManuscriptProjectUseCase createProject = new CreateManuscriptProjectUseCase();
 
     @FXML private StackPane contentPane;
 
@@ -70,7 +65,6 @@ public final class MainViewController {
         return Objects.requireNonNull(bundle, "ResourceBundle not set");
     }
 
-    /** Coloca a vista inicial (dois painéis vazios) no centro. */
     void showIdleNoProject() throws IOException {
         if (workspaceCtrl != null) {
             workspaceCtrl.clearProjectUi();
@@ -111,8 +105,8 @@ public final class MainViewController {
         contentPane.getChildren().setAll(workspaceRoot);
     }
 
-    void applyOpenResult(OpenManuscriptProjectResult result, Stage ownerStage) throws IOException {
-        if (result instanceof OpenManuscriptProjectResult.Failure f) {
+    void applyOpenResult(OpenProjectResult result, Stage ownerStage) throws IOException {
+        if (result instanceof OpenProjectResult.Failure f) {
             var alert = new Alert(Alert.AlertType.ERROR);
             alert.initOwner(ownerStage);
             alert.setHeaderText(bundle().getString("alert.open.error.header"));
@@ -120,9 +114,9 @@ public final class MainViewController {
             alert.showAndWait();
             return;
         }
-        if (result instanceof OpenManuscriptProjectResult.Success s) {
+        if (result instanceof OpenProjectResult.Success s) {
             ensureWorkspaceLoaded();
-            workspaceCtrl.applyLoadedProject(s);
+            workspaceCtrl.applyLoadedProject(s.snapshot());
             openWorkspaceView();
             if (closeProjectMenuItem != null) {
                 closeProjectMenuItem.setDisable(false);
@@ -131,7 +125,9 @@ public final class MainViewController {
     }
 
     void restoreProjectFromPath(Path path, Stage ownerStage) throws IOException {
-        applyOpenResult(openProject.open(path.toAbsolutePath().normalize()), ownerStage);
+        applyOpenResult(
+                JwmsServiceProvider.workspace().openProject(path.toAbsolutePath().normalize()),
+                ownerStage);
     }
 
     @FXML
@@ -148,13 +144,13 @@ public final class MainViewController {
             return;
         }
         Path path = file.toPath();
-        OpenManuscriptProjectResult result = openProject.open(path);
+        OpenProjectResult result = JwmsServiceProvider.workspace().openProject(path);
         try {
             applyOpenResult(result, ownerStage);
         } catch (IOException e) {
             showLoadViewError(ownerStage, e);
         }
-        if (result instanceof OpenManuscriptProjectResult.Success) {
+        if (result instanceof OpenProjectResult.Success) {
             JwmsPreferences.setLastProjectPath(path.toAbsolutePath().normalize().toString());
         }
     }
@@ -172,7 +168,7 @@ public final class MainViewController {
         if (file == null) {
             return;
         }
-        Path path = ensureJwmsSuffix(file.toPath());
+        Path path = ProjectFileHints.ensureProjectExtension(file.toPath());
         boolean overwrite = false;
         if (Files.exists(path)) {
             var confirm = new Alert(Alert.AlertType.CONFIRMATION);
@@ -186,8 +182,8 @@ public final class MainViewController {
             }
             overwrite = true;
         }
-        CreateManuscriptProjectResult created = createProject.create(path, overwrite);
-        if (created instanceof CreateManuscriptProjectResult.Failure f) {
+        CreateProjectResult created = JwmsServiceProvider.workspace().createProject(path, overwrite);
+        if (created instanceof CreateProjectResult.Failure f) {
             var alert = new Alert(Alert.AlertType.ERROR);
             alert.initOwner(ownerStage);
             alert.setHeaderText(bundle().getString("alert.new.create.error.header"));
@@ -195,10 +191,10 @@ public final class MainViewController {
             alert.showAndWait();
             return;
         }
-        Path saved = ((CreateManuscriptProjectResult.Success) created).path();
+        Path saved = ((CreateProjectResult.Success) created).path();
         JwmsPreferences.setLastProjectPath(saved.toAbsolutePath().normalize().toString());
         try {
-            applyOpenResult(openProject.open(saved), ownerStage);
+            applyOpenResult(JwmsServiceProvider.workspace().openProject(saved), ownerStage);
         } catch (IOException e) {
             showLoadViewError(ownerStage, e);
         }
@@ -325,14 +321,6 @@ public final class MainViewController {
                 .map(Path::getParent)
                 .filter(Files::isDirectory)
                 .map(Path::toFile);
-    }
-
-    private static Path ensureJwmsSuffix(Path path) {
-        String name = path.getFileName().toString();
-        if (!ManuscriptProjectPaths.endsWithProjectExtension(name)) {
-            return path.resolveSibling(name + ManuscriptProjectPaths.EXTENSION);
-        }
-        return path;
     }
 
     private Window resolveOwnerWindow() {
