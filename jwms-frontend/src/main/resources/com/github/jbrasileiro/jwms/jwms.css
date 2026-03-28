@@ -1,0 +1,129 @@
+/* JWMS — princípios UX/UI: skill de utilizador ~/.cursor/skills/jwms-javafx-ux-ui/SKILL.md */
+
+.jwms-app-root {
+  -fx-font-family: "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+.jwms-content-pane {
+  -fx-background-color: -fx-background;
+}
+
+.menu-bar {
+  -fx-background-color: derive(-fx-base, -4%);
+  -fx-border-color: transparent transparent -fx-box-border transparent;
+  -fx-border-width: 0 0 1 0;
+}
+
+.menu-bar .menu:hover {
+  -fx-background-color: derive(-fx-base, 8%);
+}
+
+.menu-bar .menu:showing {
+  -fx-background-color: derive(-fx-base, 10%);
+}
+
+.welcome-title {
+  -fx-font-size: 1.25em;
+  -fx-font-weight: bold;
+}
+
+.idle-split {
+  -fx-padding: 12;
+  -fx-background-color: -fx-background;
+}
+
+.split-pane.idle-split > .split-pane-divider {
+  -fx-background-color: derive(-fx-box-border, -12%);
+  -fx-padding: 0 3 0 3;
+}
+
+.idle-panel {
+  -fx-background-color: derive(-fx-control-inner-background, 2%);
+  -fx-background-radius: 8;
+  -fx-border-color: derive(-fx-box-border, 15%);
+  -fx-border-radius: 8;
+  -fx-border-width: 1;
+}
+
+.navigation-sidebar {
+  -fx-background-color: derive(-fx-control-inner-background, -2%);
+  -fx-border-color: -fx-box-border;
+  -fx-border-width: 0 1 0 0;
+}
+
+.nav-header-title {
+  -fx-font-size: 1.02em;
+  -fx-font-weight: bold;
+}
+
+.nav-collapse-button {
+  -fx-min-width: 2em;
+  -fx-background-radius: 4;
+  -fx-padding: 4 8 4 8;
+}
+
+.nav-collapse-button:hover {
+  -fx-background-color: derive(-fx-base, 8%);
+}
+
+.nav-toggle-button {
+  -fx-text-alignment: left;
+  -fx-padding: 8 10 8 10;
+  -fx-background-radius: 6;
+  -fx-background-insets: 0;
+}
+
+.nav-toggle-button:hover {
+  -fx-background-color: derive(-fx-base, 6%);
+}
+
+.nav-toggle-button:selected {
+  -fx-background-color: derive(-fx-accent, -18%);
+  -fx-text-fill: white;
+}
+
+.nav-toggle-button:selected .label {
+  -fx-text-fill: white;
+}
+
+.nav-icon-label {
+  -fx-min-width: 1.5em;
+  -fx-font-size: 1.05em;
+}
+
+.jwms-workspace .split-pane > .split-pane-divider {
+  -fx-background-color: derive(-fx-box-border, -10%);
+  -fx-padding: 0 2 0 2;
+}
+
+/* Não forçar -fx-padding: 0 em .screen-root — anula o padding definido no FXML */
+
+.screen-title {
+  -fx-font-size: 1.15em;
+  -fx-font-weight: bold;
+  -fx-padding: 4 0 12 0;
+}
+
+.screen-hint {
+  /* -fx-muted-text-color não resolve fora do tema Modena completo; usar derive do texto base */
+  -fx-text-fill: derive(-fx-text-base-color, 35%);
+  -fx-wrap-text: true;
+}
+
+.general-section-title {
+  -fx-font-weight: bold;
+  -fx-padding: 0 0 4 0;
+}
+
+.general-panel {
+  -fx-padding: 12;
+  -fx-background-color: derive(-fx-control-inner-background, 1%);
+  -fx-background-radius: 8;
+  -fx-border-color: derive(-fx-box-border, 20%);
+  -fx-border-radius: 8;
+  -fx-border-width: 1;
+}
+
+.general-form-label {
+  -fx-padding: 0 2 0 0;
+}

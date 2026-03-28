@@ -1,12 +1,13 @@
 package com.github.jbrasileiro.jwms;
 
 import com.github.jbrasileiro.jwms.application.CreateManuscriptProjectUseCase;
-import com.github.jbrasileiro.jwms.domain.manuscript.ManuscriptProjectPaths;
 import com.github.jbrasileiro.jwms.application.CreateManuscriptProjectUseCase.CreateManuscriptProjectResult;
 import com.github.jbrasileiro.jwms.application.OpenManuscriptProjectUseCase;
 import com.github.jbrasileiro.jwms.application.OpenManuscriptProjectUseCase.OpenManuscriptProjectResult;
+import com.github.jbrasileiro.jwms.domain.manuscript.ManuscriptProjectPaths;
 import com.github.jbrasileiro.jwms.i18n.JwmsI18n;
 import com.github.jbrasileiro.jwms.prefs.JwmsPreferences;
+import com.github.jbrasileiro.jwms.ui.ProjectFileChooserHelper;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -23,10 +24,8 @@ import javafx.scene.Parent;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
 import javafx.scene.control.MenuItem;
-import javafx.scene.control.SplitPane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -37,54 +36,112 @@ public final class MainViewController {
     private final OpenManuscriptProjectUseCase openProject = new OpenManuscriptProjectUseCase();
     private final CreateManuscriptProjectUseCase createProject = new CreateManuscriptProjectUseCase();
 
-    @FXML private SplitPane mainSplit;
-    @FXML private ListView<String> entryList;
-    @FXML private Label statusLabel;
-    @FXML private Label xmlRootLabel;
+    @FXML private StackPane contentPane;
 
     @FXML private MenuItem saveMenuItem;
     @FXML private MenuItem saveAsMenuItem;
     @FXML private MenuItem closeProjectMenuItem;
     @FXML private MenuItem exportMenuItem;
 
+    private Parent idleRoot;
+    private Parent workspaceRoot;
+    private WorkspaceViewController workspaceCtrl;
+
     private Stage stage;
     private ResourceBundle bundle;
+    private AppShellController appShell;
 
     void setStage(Stage stage) {
         this.stage = stage;
     }
 
+    void setAppShell(AppShellController appShell) {
+        this.appShell = appShell;
+    }
+
     void setResourceBundle(ResourceBundle bundle) {
         this.bundle = Objects.requireNonNull(bundle, "bundle");
+        if (workspaceCtrl != null) {
+            workspaceCtrl.setResourceBundle(bundle);
+        }
     }
 
     private ResourceBundle bundle() {
         return Objects.requireNonNull(bundle, "ResourceBundle not set");
     }
 
-    @FXML
-    private void initialize() {
-        if (mainSplit != null) {
-            javafx.application.Platform.runLater(() -> mainSplit.setDividerPositions(0.55));
+    /** Coloca a vista inicial (dois painéis vazios) no centro. */
+    void showIdleNoProject() throws IOException {
+        if (workspaceCtrl != null) {
+            workspaceCtrl.clearProjectUi();
         }
+        openIdleView();
+        if (closeProjectMenuItem != null) {
+            closeProjectMenuItem.setDisable(true);
+        }
+    }
+
+    private void ensureIdleLoaded() throws IOException {
+        if (idleRoot != null) {
+            return;
+        }
+        FXMLLoader loader =
+                new FXMLLoader(MainViewController.class.getResource("IdleView.fxml"), bundle());
+        idleRoot = loader.load();
+    }
+
+    private void ensureWorkspaceLoaded() throws IOException {
+        if (workspaceRoot != null) {
+            return;
+        }
+        FXMLLoader loader =
+                new FXMLLoader(MainViewController.class.getResource("WorkspaceView.fxml"), bundle());
+        workspaceRoot = loader.load();
+        workspaceCtrl = loader.getController();
+        workspaceCtrl.setResourceBundle(bundle());
+    }
+
+    private void openIdleView() throws IOException {
+        ensureIdleLoaded();
+        contentPane.getChildren().setAll(idleRoot);
+    }
+
+    private void openWorkspaceView() throws IOException {
+        ensureWorkspaceLoaded();
+        contentPane.getChildren().setAll(workspaceRoot);
+    }
+
+    void applyOpenResult(OpenManuscriptProjectResult result, Stage ownerStage) throws IOException {
+        if (result instanceof OpenManuscriptProjectResult.Failure f) {
+            var alert = new Alert(Alert.AlertType.ERROR);
+            alert.initOwner(ownerStage);
+            alert.setHeaderText(bundle().getString("alert.open.error.header"));
+            alert.setContentText(String.join("\n", f.errors()));
+            alert.showAndWait();
+            return;
+        }
+        if (result instanceof OpenManuscriptProjectResult.Success s) {
+            ensureWorkspaceLoaded();
+            workspaceCtrl.applyLoadedProject(s);
+            openWorkspaceView();
+            if (closeProjectMenuItem != null) {
+                closeProjectMenuItem.setDisable(false);
+            }
+        }
+    }
+
+    void restoreProjectFromPath(Path path, Stage ownerStage) throws IOException {
+        applyOpenResult(openProject.open(path.toAbsolutePath().normalize()), ownerStage);
     }
 
     @FXML
     private void onOpenProject(ActionEvent event) {
-        Window owner = stage;
-        if (owner == null && entryList != null && entryList.getScene() != null) {
-            owner = entryList.getScene().getWindow();
-        }
+        Window owner = resolveOwnerWindow();
         if (!(owner instanceof Stage ownerStage)) {
             return;
         }
         var chooser = new FileChooser();
-        chooser.setTitle(bundle().getString("filechooser.manuskript.title"));
-        chooser.getExtensionFilters()
-                .add(
-                        new FileChooser.ExtensionFilter(
-                                bundle().getString("filechooser.open.filter"),
-                                "*" + ManuscriptProjectPaths.EXTENSION));
+        ProjectFileChooserHelper.configureOpenProjectDialog(chooser, bundle());
         initialDirectoryFromLastProject().ifPresent(chooser::setInitialDirectory);
         var file = chooser.showOpenDialog(ownerStage);
         if (file == null) {
@@ -92,7 +149,11 @@ public final class MainViewController {
         }
         Path path = file.toPath();
         OpenManuscriptProjectResult result = openProject.open(path);
-        applyOpenResult(result, ownerStage);
+        try {
+            applyOpenResult(result, ownerStage);
+        } catch (IOException e) {
+            showLoadViewError(ownerStage, e);
+        }
         if (result instanceof OpenManuscriptProjectResult.Success) {
             JwmsPreferences.setLastProjectPath(path.toAbsolutePath().normalize().toString());
         }
@@ -105,12 +166,7 @@ public final class MainViewController {
             return;
         }
         var chooser = new FileChooser();
-        chooser.setTitle(bundle().getString("filechooser.manuskript.save.title"));
-        chooser.getExtensionFilters()
-                .add(
-                        new FileChooser.ExtensionFilter(
-                                bundle().getString("filechooser.save.filter"),
-                                "*" + ManuscriptProjectPaths.EXTENSION));
+        ProjectFileChooserHelper.configureNewProjectSaveDialog(chooser, bundle());
         initialDirectoryFromLastProject().ifPresent(chooser::setInitialDirectory);
         File file = chooser.showSaveDialog(ownerStage);
         if (file == null) {
@@ -141,85 +197,51 @@ public final class MainViewController {
         }
         Path saved = ((CreateManuscriptProjectResult.Success) created).path();
         JwmsPreferences.setLastProjectPath(saved.toAbsolutePath().normalize().toString());
-        applyOpenResult(openProject.open(saved), ownerStage);
-    }
-
-    private void applyOpenResult(OpenManuscriptProjectResult result, Stage ownerStage) {
-        if (result instanceof OpenManuscriptProjectResult.Failure f) {
-            entryList.getItems().clear();
-            xmlRootLabel.setText("");
-            statusLabel.setText(bundle().getString("status.open.failed"));
-            var alert = new Alert(Alert.AlertType.ERROR);
-            alert.initOwner(ownerStage);
-            alert.setHeaderText(bundle().getString("alert.open.error.header"));
-            alert.setContentText(String.join("\n", f.errors()));
-            alert.showAndWait();
-            return;
-        }
-        if (result instanceof OpenManuscriptProjectResult.Success s) {
-            var p = s.project();
-            entryList.getItems().setAll(p.getRelativeEntryNames());
-            String formatSuffix =
-                    p.isZipContainer()
-                            ? bundle().getString("status.format.zip")
-                            : bundle().getString("status.format.folder");
-            statusLabel.setText(
-                    MessageFormat.format(
-                            bundle().getString("status.project.loaded"),
-                            p.getProjectFile(),
-                            String.valueOf(p.getFormatVersion()),
-                            formatSuffix));
-            xmlRootLabel.setText(
-                    p.getSampleXmlRootLocalName()
-                            .map(
-                                    n ->
-                                            MessageFormat.format(
-                                                    bundle().getString("xml.root.pattern"), n))
-                            .orElseGet(() -> bundle().getString("xml.root.none")));
+        try {
+            applyOpenResult(openProject.open(saved), ownerStage);
+        } catch (IOException e) {
+            showLoadViewError(ownerStage, e);
         }
     }
 
-    private static Optional<File> initialDirectoryFromLastProject() {
-        return JwmsPreferences.getLastProjectPath()
-                .map(Path::of)
-                .map(Path::toAbsolutePath)
-                .map(Path::normalize)
-                .map(Path::getParent)
-                .filter(Files::isDirectory)
-                .map(Path::toFile);
-    }
-
-    private static Path ensureJwmsSuffix(Path path) {
-        String name = path.getFileName().toString();
-        if (!ManuscriptProjectPaths.endsWithProjectExtension(name)) {
-            return path.resolveSibling(name + ManuscriptProjectPaths.EXTENSION);
-        }
-        return path;
+    private void showLoadViewError(Stage ownerStage, IOException e) {
+        var alert = new Alert(Alert.AlertType.ERROR);
+        alert.initOwner(ownerStage);
+        alert.setHeaderText(bundle().getString("settings.reload.error.header"));
+        alert.setContentText(e.getMessage());
+        alert.showAndWait();
     }
 
     @FXML
     private void onSave(ActionEvent event) {
-        // Reservado: Guardar (desactivado até existir modelo editável + Save no backend).
+        // Reservado
     }
 
     @FXML
     private void onSaveAs(ActionEvent event) {
-        // Reservado: Guardar como…
+        // Reservado
     }
 
     @FXML
     private void onCloseProject(ActionEvent event) {
-        // Reservado: Fechar projeto
+        try {
+            showIdleNoProject();
+        } catch (IOException e) {
+            Stage ownerStage = resolveOwnerStage();
+            if (ownerStage != null) {
+                showLoadViewError(ownerStage, e);
+            }
+        }
     }
 
     @FXML
     private void onImport(ActionEvent event) {
-        // Reservado: Importar (UI activa; lógica em fases posteriores).
+        // Reservado
     }
 
     @FXML
     private void onExport(ActionEvent event) {
-        // Reservado: Exportar (desactivado até implementação).
+        // Reservado
     }
 
     @FXML
@@ -252,7 +274,11 @@ public final class MainViewController {
                 JwmsPreferences.setLocaleTag(tag);
             }
             ResourceBundle.clearCache();
-            reloadMainView(ownerStage);
+            if (appShell != null) {
+                appShell.reloadWorkspaceAfterLocale(ownerStage);
+            } else {
+                reloadMainView(ownerStage);
+            }
         } catch (IOException e) {
             var alert = new Alert(Alert.AlertType.ERROR);
             alert.initOwner(ownerStage);
@@ -260,18 +286,6 @@ public final class MainViewController {
             alert.setContentText(e.getMessage());
             alert.showAndWait();
         }
-    }
-
-    private Stage resolveOwnerStage() {
-        if (stage != null) {
-            return stage;
-        }
-        if (entryList != null
-                && entryList.getScene() != null
-                && entryList.getScene().getWindow() instanceof Stage s) {
-            return s;
-        }
-        return null;
     }
 
     private void reloadMainView(Stage ownerStage) {
@@ -285,6 +299,8 @@ public final class MainViewController {
             MainViewController newCtrl = loader.getController();
             newCtrl.setResourceBundle(newBundle);
             newCtrl.setStage(ownerStage);
+            newCtrl.setAppShell(appShell);
+            newCtrl.showIdleNoProject();
             ownerStage.getScene().setRoot(root);
             ownerStage.setTitle(newBundle.getString("app.title"));
         } catch (IOException e) {
@@ -299,5 +315,40 @@ public final class MainViewController {
     @FXML
     private void onQuit(ActionEvent event) {
         Platform.exit();
+    }
+
+    private static Optional<File> initialDirectoryFromLastProject() {
+        return JwmsPreferences.getLastProjectPath()
+                .map(Path::of)
+                .map(Path::toAbsolutePath)
+                .map(Path::normalize)
+                .map(Path::getParent)
+                .filter(Files::isDirectory)
+                .map(Path::toFile);
+    }
+
+    private static Path ensureJwmsSuffix(Path path) {
+        String name = path.getFileName().toString();
+        if (!ManuscriptProjectPaths.endsWithProjectExtension(name)) {
+            return path.resolveSibling(name + ManuscriptProjectPaths.EXTENSION);
+        }
+        return path;
+    }
+
+    private Window resolveOwnerWindow() {
+        if (stage != null) {
+            return stage;
+        }
+        if (contentPane != null
+                && contentPane.getScene() != null
+                && contentPane.getScene().getWindow() != null) {
+            return contentPane.getScene().getWindow();
+        }
+        return null;
+    }
+
+    private Stage resolveOwnerStage() {
+        Window w = resolveOwnerWindow();
+        return w instanceof Stage s ? s : null;
     }
 }

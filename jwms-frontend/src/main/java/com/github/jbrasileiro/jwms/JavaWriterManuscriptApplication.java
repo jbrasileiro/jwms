@@ -1,6 +1,5 @@
 package com.github.jbrasileiro.jwms;
 
-import com.github.jbrasileiro.jwms.i18n.Enumi18n;
 import com.github.jbrasileiro.jwms.i18n.JwmsI18n;
 import java.io.IOException;
 import java.net.URL;
@@ -13,22 +12,29 @@ import javafx.stage.Stage;
 
 public class JavaWriterManuscriptApplication extends Application {
 
-	@Override
-	public void start(Stage stage) throws IOException {
-		ResourceBundle bundle = JwmsI18n.bundle();
-		stage.setTitle(bundle.getString(Enumi18n.APP_TILE.getKey()));
-		URL resource = JavaWriterManuscriptApplication.class.getResource("MainView.fxml");
-		FXMLLoader loader = new FXMLLoader(resource, bundle);
-		Parent root = loader.load();
-		MainViewController controller = loader.getController();
-		controller.setResourceBundle(bundle);
-		controller.setStage(stage);
+    @Override
+    public void start(Stage stage) throws IOException {
+        ResourceBundle bundle = JwmsI18n.bundle();
+        stage.setTitle(bundle.getString("app.title"));
 
-		stage.setScene(new Scene(root, 960, 600));
-		stage.show();
-	}
+        URL shellUrl = JavaWriterManuscriptApplication.class.getResource("AppShell.fxml");
+        FXMLLoader loader = new FXMLLoader(shellUrl, bundle);
+        Parent root = loader.load();
+        AppShellController shell = loader.getController();
+        shell.setStage(stage);
+        shell.setBundle(bundle);
+        shell.bootstrap();
 
-	public static void main(String[] args) {
-		launch(args);
-	}
+        Scene scene = new Scene(root, 960, 600);
+        URL cssUrl = JavaWriterManuscriptApplication.class.getResource("jwms.css");
+        if (cssUrl != null) {
+            scene.getStylesheets().add(cssUrl.toExternalForm());
+        }
+        stage.setScene(scene);
+        stage.show();
+    }
+
+    public static void main(String[] args) {
+        launch(args);
+    }
 }

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.control.SplitPane?>
+
+<SplitPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.github.jbrasileiro.jwms.IdleViewController" fx:id="rootSplit" dividerPositions="0.5" maxHeight="Infinity" maxWidth="Infinity" styleClass="idle-split">
+  <Region maxHeight="Infinity" maxWidth="Infinity" minHeight="0.0" minWidth="0.0" styleClass="idle-panel" />
+  <Region maxHeight="Infinity" maxWidth="Infinity" minHeight="0.0" minWidth="0.0" styleClass="idle-panel" />
+</SplitPane>
