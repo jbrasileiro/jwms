@@ -68,13 +68,7 @@ public final class OpenManuscriptProjectUseCase {
     }
 
     private static Path resolveContentFolder(Path projectFile) {
-        Path parent = projectFile.getParent();
-        if (parent == null) {
-            parent = Path.of(".");
-        }
-        String fileName = projectFile.getFileName().toString();
-        String base = ManuscriptProjectPaths.basenameForLegacyFolderLayout(fileName);
-        return parent.resolve(base);
+        return ManuscriptProjectPaths.legacyContentFolder(projectFile);
     }
 
     private Optional<byte[]> firstXmlInZip(Path zipFile, List<String> relativeNames) throws IOException {

@@ -12,8 +12,10 @@
 		migração alvo do Manuskript (Python/PyQt5).</description>
 
 	<modules>
+		<module>jwms-backend-interfaces</module>
 		<module>jwms-backend</module>
 		<module>jwms-frontend</module>
+		<module>jwms-app</module>
 	</modules>
 
 	<properties>
@@ -29,8 +31,7 @@
 		<jpackage.app.version>0.0.1</jpackage.app.version>
 		<jpackage.output.dir>jpackage-app</jpackage.output.dir>
 		<jpackage.input.dir>jpackage-input</jpackage.input.dir>
-		<jwms.main.class>
-			com.github.jbrasileiro.jwms.JavaWriterManuscriptApplication</jwms.main.class>
+		<jwms.main.class>com.github.jbrasileiro.jwms.app.JwmsLauncher</jwms.main.class>
 	</properties>
 
 	<dependencyManagement>
@@ -66,6 +67,11 @@
 				<groupId>com.fasterxml.jackson.core</groupId>
 				<artifactId>jackson-databind</artifactId>
 				<version>2.18.2</version>
+			</dependency>
+			<dependency>
+				<groupId>com.github.jbrasileiro</groupId>
+				<artifactId>jwms-backend-interfaces</artifactId>
+				<version>${project.version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>

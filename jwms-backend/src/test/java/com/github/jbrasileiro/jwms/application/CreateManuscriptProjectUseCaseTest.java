@@ -31,6 +31,10 @@ class CreateManuscriptProjectUseCaseTest {
         assertEquals(2, success.project().getFormatVersion());
         assertTrue(success.project().isZipContainer());
         assertTrue(success.project().getRelativeEntryNames().contains("plots.xml"));
+        assertTrue(
+                success.project()
+                        .getRelativeEntryNames()
+                        .contains("jwms/main/General.json"));
     }
 
     @Test

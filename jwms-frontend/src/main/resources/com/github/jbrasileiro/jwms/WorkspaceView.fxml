@@ -47,17 +47,17 @@
                 <ColumnConstraints hgrow="ALWAYS" minWidth="120.0" prefWidth="200.0" />
               </columnConstraints>
               <Label styleClass="general-form-label" text="%general.field.title" GridPane.columnIndex="0" GridPane.halignment="RIGHT" GridPane.rowIndex="0" />
-              <TextField GridPane.columnIndex="1" GridPane.rowIndex="0" />
+              <TextField fx:id="generalTitleField" GridPane.columnIndex="1" GridPane.rowIndex="0" />
               <Label styleClass="general-form-label" text="%general.field.subtitle" GridPane.columnIndex="0" GridPane.halignment="RIGHT" GridPane.rowIndex="1" />
-              <TextField GridPane.columnIndex="1" GridPane.rowIndex="1" />
+              <TextField fx:id="generalSubtitleField" GridPane.columnIndex="1" GridPane.rowIndex="1" />
               <Label styleClass="general-form-label" text="%general.field.series" GridPane.columnIndex="0" GridPane.halignment="RIGHT" GridPane.rowIndex="2" />
-              <TextField GridPane.columnIndex="1" GridPane.rowIndex="2" />
+              <TextField fx:id="generalSeriesField" GridPane.columnIndex="1" GridPane.rowIndex="2" />
               <Label styleClass="general-form-label" text="%general.field.volume" GridPane.columnIndex="0" GridPane.halignment="RIGHT" GridPane.rowIndex="3" />
-              <TextField GridPane.columnIndex="1" GridPane.rowIndex="3" />
+              <TextField fx:id="generalVolumeField" GridPane.columnIndex="1" GridPane.rowIndex="3" />
               <Label styleClass="general-form-label" text="%general.field.genre" GridPane.columnIndex="0" GridPane.halignment="RIGHT" GridPane.rowIndex="4" />
-              <TextField GridPane.columnIndex="1" GridPane.rowIndex="4" />
+              <TextField fx:id="generalGenreField" GridPane.columnIndex="1" GridPane.rowIndex="4" />
               <Label styleClass="general-form-label" text="%general.field.license" GridPane.columnIndex="0" GridPane.halignment="RIGHT" GridPane.rowIndex="5" />
-              <TextField GridPane.columnIndex="1" GridPane.rowIndex="5" />
+              <TextField fx:id="generalLicenseField" GridPane.columnIndex="1" GridPane.rowIndex="5" />
             </GridPane>
           </VBox>
           <VBox maxWidth="Infinity" spacing="10.0" styleClass="general-panel" HBox.hgrow="ALWAYS">
@@ -68,9 +68,9 @@
                 <ColumnConstraints hgrow="ALWAYS" minWidth="120.0" prefWidth="200.0" />
               </columnConstraints>
               <Label styleClass="general-form-label" text="%general.field.authorName" GridPane.columnIndex="0" GridPane.halignment="RIGHT" GridPane.rowIndex="0" />
-              <TextField GridPane.columnIndex="1" GridPane.rowIndex="0" />
+              <TextField fx:id="generalAuthorNameField" GridPane.columnIndex="1" GridPane.rowIndex="0" />
               <Label styleClass="general-form-label" text="%general.field.authorEmail" GridPane.columnIndex="0" GridPane.halignment="RIGHT" GridPane.rowIndex="1" />
-              <TextField GridPane.columnIndex="1" GridPane.rowIndex="1" />
+              <TextField fx:id="generalAuthorEmailField" GridPane.columnIndex="1" GridPane.rowIndex="1" />
             </GridPane>
           </VBox>
         </HBox>
