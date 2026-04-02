@@ -3,13 +3,9 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.ScrollPane?>
-<?import javafx.scene.control.SplitPane?>
-<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.ColumnConstraints?>
-<?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.StackPane?>
@@ -24,117 +20,26 @@
       <HBox alignment="CENTER_LEFT" spacing="8.0">
         <Label fx:id="navTitleLabel" styleClass="nav-header-title" text="%nav.title" />
         <Region HBox.hgrow="ALWAYS" />
-        <Button fx:id="navToggleButton" onAction="#onToggleNavigation" styleClass="nav-collapse-button" text="«" />
+        <Button fx:id="navToggleButton" onAction="#onToggleNavigation" styleClass="nav-collapse-button" text="«">
+          <tooltip>
+            <Tooltip text="%nav.collapse.tooltip" />
+          </tooltip>
+        </Button>
       </HBox>
       <ScrollPane fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED" VBox.vgrow="ALWAYS">
-        <VBox fx:id="navButtonContainer" spacing="4.0" />
+        <VBox fx:id="navButtonContainer" spacing="8.0" />
       </ScrollPane>
     </VBox>
   </left>
   <center>
-    <StackPane>
-      <VBox fx:id="screenGeneral" spacing="12.0" styleClass="screen-root screen-general">
-        <padding>
-          <Insets bottom="24.0" left="28.0" right="28.0" top="24.0" />
-        </padding>
-        <Label styleClass="screen-title" text="%screen.general" />
-        <HBox spacing="16.0" VBox.vgrow="ALWAYS">
-          <VBox maxWidth="Infinity" spacing="10.0" styleClass="general-panel" HBox.hgrow="ALWAYS">
-            <Label styleClass="general-section-title" text="%general.book.section" />
-            <GridPane hgap="6.0" vgap="8.0">
-              <columnConstraints>
-                <ColumnConstraints hgrow="NEVER" minWidth="48.0" prefWidth="-1.0" />
-                <ColumnConstraints hgrow="ALWAYS" minWidth="120.0" prefWidth="200.0" />
-              </columnConstraints>
-              <Label styleClass="general-form-label" text="%general.field.title" GridPane.columnIndex="0" GridPane.halignment="RIGHT" GridPane.rowIndex="0" />
-              <TextField fx:id="generalTitleField" GridPane.columnIndex="1" GridPane.rowIndex="0" />
-              <Label styleClass="general-form-label" text="%general.field.subtitle" GridPane.columnIndex="0" GridPane.halignment="RIGHT" GridPane.rowIndex="1" />
-              <TextField fx:id="generalSubtitleField" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-              <Label styleClass="general-form-label" text="%general.field.series" GridPane.columnIndex="0" GridPane.halignment="RIGHT" GridPane.rowIndex="2" />
-              <TextField fx:id="generalSeriesField" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-              <Label styleClass="general-form-label" text="%general.field.volume" GridPane.columnIndex="0" GridPane.halignment="RIGHT" GridPane.rowIndex="3" />
-              <TextField fx:id="generalVolumeField" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-              <Label styleClass="general-form-label" text="%general.field.genre" GridPane.columnIndex="0" GridPane.halignment="RIGHT" GridPane.rowIndex="4" />
-              <TextField fx:id="generalGenreField" GridPane.columnIndex="1" GridPane.rowIndex="4" />
-              <Label styleClass="general-form-label" text="%general.field.license" GridPane.columnIndex="0" GridPane.halignment="RIGHT" GridPane.rowIndex="5" />
-              <TextField fx:id="generalLicenseField" GridPane.columnIndex="1" GridPane.rowIndex="5" />
-            </GridPane>
-          </VBox>
-          <VBox maxWidth="Infinity" spacing="10.0" styleClass="general-panel" HBox.hgrow="ALWAYS">
-            <Label styleClass="general-section-title" text="%general.author.section" />
-            <GridPane hgap="6.0" vgap="8.0">
-              <columnConstraints>
-                <ColumnConstraints hgrow="NEVER" minWidth="48.0" prefWidth="-1.0" />
-                <ColumnConstraints hgrow="ALWAYS" minWidth="120.0" prefWidth="200.0" />
-              </columnConstraints>
-              <Label styleClass="general-form-label" text="%general.field.authorName" GridPane.columnIndex="0" GridPane.halignment="RIGHT" GridPane.rowIndex="0" />
-              <TextField fx:id="generalAuthorNameField" GridPane.columnIndex="1" GridPane.rowIndex="0" />
-              <Label styleClass="general-form-label" text="%general.field.authorEmail" GridPane.columnIndex="0" GridPane.halignment="RIGHT" GridPane.rowIndex="1" />
-              <TextField fx:id="generalAuthorEmailField" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-            </GridPane>
-          </VBox>
-        </HBox>
-      </VBox>
-      <VBox fx:id="screenSummary" managed="false" spacing="12.0" styleClass="screen-root" visible="false">
-        <padding>
-          <Insets bottom="16.0" left="16.0" right="16.0" top="16.0" />
-        </padding>
-        <Label styleClass="screen-title" text="%screen.summary" />
-        <Label styleClass="screen-hint" text="%screen.summary.hint" />
-      </VBox>
-      <VBox fx:id="screenCharacters" managed="false" spacing="12.0" styleClass="screen-root" visible="false">
-        <padding>
-          <Insets bottom="16.0" left="16.0" right="16.0" top="16.0" />
-        </padding>
-        <Label styleClass="screen-title" text="%screen.characters" />
-        <Label styleClass="screen-hint" text="%screen.characters.hint" />
-      </VBox>
-      <VBox fx:id="screenPlots" managed="false" spacing="12.0" styleClass="screen-root" visible="false">
-        <padding>
-          <Insets bottom="16.0" left="16.0" right="16.0" top="16.0" />
-        </padding>
-        <Label styleClass="screen-title" text="%screen.plots" />
-        <Label styleClass="screen-hint" text="%screen.plots.hint" />
-      </VBox>
-      <VBox fx:id="screenWorld" managed="false" spacing="12.0" styleClass="screen-root" visible="false">
-        <padding>
-          <Insets bottom="16.0" left="16.0" right="16.0" top="16.0" />
-        </padding>
-        <Label styleClass="screen-title" text="%screen.world" />
-        <Label styleClass="screen-hint" text="%screen.world.hint" />
-      </VBox>
-      <VBox fx:id="screenOutline" managed="false" spacing="12.0" styleClass="screen-root" visible="false">
-        <padding>
-          <Insets bottom="16.0" left="16.0" right="16.0" top="16.0" />
-        </padding>
-        <Label styleClass="screen-title" text="%screen.outline" />
-        <Label styleClass="screen-hint" text="%screen.outline.hint" />
-      </VBox>
-      <VBox fx:id="screenEditor" managed="false" spacing="0.0" styleClass="screen-root" visible="false">
-        <padding>
-          <Insets bottom="8.0" left="8.0" right="8.0" top="8.0" />
-        </padding>
-        <Label styleClass="screen-title" text="%screen.editor">
-          <VBox.margin>
-            <Insets bottom="8.0" left="8.0" right="8.0" />
-          </VBox.margin>
-        </Label>
-        <SplitPane dividerPositions="0.55" fx:id="mainSplit" VBox.vgrow="ALWAYS">
-          <VBox spacing="8.0">
-            <padding>
-              <Insets bottom="8.0" left="8.0" right="8.0" top="8.0" />
-            </padding>
-            <Label text="%label.entries.relative" />
-            <ListView fx:id="entryList" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS" />
-          </VBox>
-          <VBox spacing="8.0">
-            <padding>
-              <Insets bottom="8.0" left="8.0" right="8.0" top="8.0" />
-            </padding>
-            <Label styleClass="screen-hint" text="%editor.placeholder" wrapText="true" />
-          </VBox>
-        </SplitPane>
-      </VBox>
+    <StackPane alignment="TOP_LEFT">
+      <fx:include fx:id="generalScreen" source="GeneralScreen.fxml" />
+      <fx:include fx:id="summaryScreen" source="SummaryScreen.fxml" managed="false" visible="false" />
+      <fx:include fx:id="charactersScreen" source="CharactersScreen.fxml" managed="false" visible="false" />
+      <fx:include fx:id="plotsScreen" source="PlotsScreen.fxml" managed="false" visible="false" />
+      <fx:include fx:id="worldScreen" source="WorldScreen.fxml" managed="false" visible="false" />
+      <fx:include fx:id="outlineScreen" source="OutlineScreen.fxml" managed="false" visible="false" />
+      <fx:include fx:id="editorScreen" source="EditorScreen.fxml" managed="false" visible="false" />
     </StackPane>
   </center>
 </BorderPane>

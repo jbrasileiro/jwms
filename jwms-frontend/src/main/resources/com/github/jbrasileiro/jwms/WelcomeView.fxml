@@ -5,11 +5,12 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.github.jbrasileiro.jwms.WelcomeController" alignment="CENTER" spacing="16.0">
+<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.github.jbrasileiro.jwms.WelcomeController" alignment="CENTER" spacing="16.0" styleClass="jwms-welcome-root">
   <padding>
     <Insets bottom="24.0" left="24.0" right="24.0" top="24.0" />
   </padding>
   <Label styleClass="welcome-title" text="%app.title" />
-  <Button mnemonicParsing="false" onAction="#onOpenProject" text="%menu.file.open" />
-  <Button mnemonicParsing="false" onAction="#onNewProject" text="%menu.file.new" />
+  <Label styleClass="screen-hint" text="%welcome.tagline" textAlignment="CENTER" wrapText="true" />
+  <Button defaultButton="true" mnemonicParsing="false" onAction="#onOpenProject" styleClass="jwms-welcome-button" text="%menu.file.open" />
+  <Button mnemonicParsing="false" onAction="#onNewProject" styleClass="jwms-welcome-button" text="%menu.file.new" />
 </VBox>

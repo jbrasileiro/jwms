@@ -3,13 +3,16 @@ package com.github.jbrasileiro.jwms.adapter;
 import com.github.jbrasileiro.jwms.api.CreateProjectResult;
 import com.github.jbrasileiro.jwms.api.GeneralMetadataDto;
 import com.github.jbrasileiro.jwms.api.LoadGeneralResult;
+import com.github.jbrasileiro.jwms.api.LoadSummaryResult;
 import com.github.jbrasileiro.jwms.api.ManuscriptWorkspaceApi;
 import com.github.jbrasileiro.jwms.api.OpenProjectResult;
 import com.github.jbrasileiro.jwms.api.ProjectSnapshot;
 import com.github.jbrasileiro.jwms.api.SaveResult;
+import com.github.jbrasileiro.jwms.api.SummaryMetadataDto;
 import com.github.jbrasileiro.jwms.application.CreateManuscriptProjectUseCase;
 import com.github.jbrasileiro.jwms.application.OpenManuscriptProjectUseCase;
 import com.github.jbrasileiro.jwms.infrastructure.persistence.GeneralMetadataPersistence;
+import com.github.jbrasileiro.jwms.infrastructure.persistence.SummaryMetadataPersistence;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
@@ -20,6 +23,7 @@ public final class DefaultManuscriptWorkspaceApi implements ManuscriptWorkspaceA
     private final OpenManuscriptProjectUseCase openUseCase = new OpenManuscriptProjectUseCase();
     private final CreateManuscriptProjectUseCase createUseCase = new CreateManuscriptProjectUseCase();
     private final GeneralMetadataPersistence generalPersistence = new GeneralMetadataPersistence();
+    private final SummaryMetadataPersistence summaryPersistence = new SummaryMetadataPersistence();
 
     @Override
     public OpenProjectResult openProject(Path projectFile) {
@@ -65,6 +69,29 @@ public final class DefaultManuscriptWorkspaceApi implements ManuscriptWorkspaceA
                     snapshot.projectFile(),
                     snapshot.zipContainer(),
                     GeneralMetadataMapping.fromDto(metadata));
+            return new SaveResult.Ok();
+        } catch (IOException e) {
+            return new SaveResult.Failure(List.of(e.getMessage()));
+        }
+    }
+
+    @Override
+    public LoadSummaryResult loadSummary(ProjectSnapshot snapshot) {
+        try {
+            var data = summaryPersistence.load(snapshot.projectFile(), snapshot.zipContainer());
+            return new LoadSummaryResult.Success(SummaryMetadataMapping.toDto(data));
+        } catch (IOException e) {
+            return new LoadSummaryResult.Failure(List.of(e.getMessage()));
+        }
+    }
+
+    @Override
+    public SaveResult saveSummary(ProjectSnapshot snapshot, SummaryMetadataDto metadata) {
+        try {
+            summaryPersistence.save(
+                    snapshot.projectFile(),
+                    snapshot.zipContainer(),
+                    SummaryMetadataMapping.fromDto(metadata));
             return new SaveResult.Ok();
         } catch (IOException e) {
             return new SaveResult.Failure(List.of(e.getMessage()));

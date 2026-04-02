@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+	fx:controller="com.github.jbrasileiro.jwms.GeneralScreenController"
+	spacing="16.0" styleClass="screen-root screen-general">
+	<padding>
+		<Insets bottom="24.0" left="24.0" right="24.0" top="24.0" />
+	</padding>
+	<Label styleClass="screen-title" text="%screen.general" />
+	<HBox spacing="16.0" VBox.vgrow="ALWAYS">
+		<VBox maxWidth="Infinity" spacing="8.0" styleClass="general-panel" HBox.hgrow="ALWAYS">
+			<Label styleClass="general-section-title" text="%general.book.section" />
+			<GridPane hgap="8.0" vgap="8.0">
+				<columnConstraints>
+					<ColumnConstraints hgrow="NEVER" minWidth="48.0" prefWidth="-1.0" />
+					<ColumnConstraints hgrow="ALWAYS" minWidth="120.0" prefWidth="200.0" />
+				</columnConstraints>
+				<Label styleClass="general-form-label" text="%general.field.title" GridPane.columnIndex="0" GridPane.halignment="RIGHT" GridPane.rowIndex="0" />
+				<TextField fx:id="generalTitleField" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+				<Label styleClass="general-form-label" text="%general.field.subtitle" GridPane.columnIndex="0" GridPane.halignment="RIGHT" GridPane.rowIndex="1" />
+				<TextField fx:id="generalSubtitleField" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+				<Label styleClass="general-form-label" text="%general.field.series" GridPane.columnIndex="0" GridPane.halignment="RIGHT" GridPane.rowIndex="2" />
+				<TextField fx:id="generalSeriesField" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+				<Label styleClass="general-form-label" text="%general.field.volume" GridPane.columnIndex="0" GridPane.halignment="RIGHT" GridPane.rowIndex="3" />
+				<TextField fx:id="generalVolumeField" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+				<Label styleClass="general-form-label" text="%general.field.genre" GridPane.columnIndex="0" GridPane.halignment="RIGHT" GridPane.rowIndex="4" />
+				<TextField fx:id="generalGenreField" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+				<Label styleClass="general-form-label" text="%general.field.license" GridPane.columnIndex="0" GridPane.halignment="RIGHT" GridPane.rowIndex="5" />
+				<TextField fx:id="generalLicenseField" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+			</GridPane>
+		</VBox>
+		<VBox maxWidth="Infinity" spacing="8.0" styleClass="general-panel" HBox.hgrow="ALWAYS">
+			<Label styleClass="general-section-title" text="%general.author.section" />
+			<GridPane hgap="8.0" vgap="8.0">
+				<columnConstraints>
+					<ColumnConstraints hgrow="NEVER" minWidth="48.0" prefWidth="-1.0" />
+					<ColumnConstraints hgrow="ALWAYS" minWidth="120.0" prefWidth="200.0" />
+				</columnConstraints>
+				<Label styleClass="general-form-label" text="%general.field.authorName" GridPane.columnIndex="0" GridPane.halignment="RIGHT" GridPane.rowIndex="0" />
+				<TextField fx:id="generalAuthorNameField" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+				<Label styleClass="general-form-label" text="%general.field.authorEmail" GridPane.columnIndex="0" GridPane.halignment="RIGHT" GridPane.rowIndex="1" />
+				<TextField fx:id="generalAuthorEmailField" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+			</GridPane>
+		</VBox>
+	</HBox>
+</VBox>

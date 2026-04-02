@@ -1,10 +1,6 @@
 package com.github.jbrasileiro.jwms;
 
-import com.github.jbrasileiro.jwms.api.GeneralMetadataDto;
-import com.github.jbrasileiro.jwms.api.LoadGeneralResult;
-import com.github.jbrasileiro.jwms.api.ManuscriptWorkspaceApi;
 import com.github.jbrasileiro.jwms.api.ProjectSnapshot;
-import com.github.jbrasileiro.jwms.api.SaveResult;
 import com.github.jbrasileiro.jwms.ui.NavigationScreen;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,15 +14,12 @@ import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
-import javafx.scene.control.SplitPane;
-import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.Tooltip;
 import javafx.scene.layout.VBox;
 
-/** Vista do projecto aberto: navegação e ecrãs (General, Editor, …). */
+/** Vista do projecto aberto: barra lateral e composição dos ecrãs (FXML incluídos). */
 public final class WorkspaceViewController {
 
     private static final double NAV_WIDTH_EXPANDED = 220;
@@ -36,171 +29,58 @@ public final class WorkspaceViewController {
     @FXML private Label navTitleLabel;
     @FXML private Button navToggleButton;
     @FXML private VBox navButtonContainer;
-    @FXML private VBox screenGeneral;
-    @FXML private VBox screenSummary;
-    @FXML private VBox screenCharacters;
-    @FXML private VBox screenPlots;
-    @FXML private VBox screenWorld;
-    @FXML private VBox screenOutline;
-    @FXML private VBox screenEditor;
-    @FXML private SplitPane mainSplit;
-    @FXML private ListView<String> entryList;
 
-    @FXML private TextField generalTitleField;
-    @FXML private TextField generalSubtitleField;
-    @FXML private TextField generalSeriesField;
-    @FXML private TextField generalVolumeField;
-    @FXML private TextField generalGenreField;
-    @FXML private TextField generalLicenseField;
-    @FXML private TextField generalAuthorNameField;
-    @FXML private TextField generalAuthorEmailField;
+    @FXML private VBox generalScreen;
+    @FXML private GeneralScreenController generalScreenController;
 
-    private final List<TextField> generalFields = new ArrayList<>();
+    @FXML private VBox summaryScreen;
+    @FXML private SummaryScreenController summaryScreenController;
+
+    @FXML private VBox charactersScreen;
+    @FXML private VBox plotsScreen;
+    @FXML private VBox worldScreen;
+    @FXML private VBox outlineScreen;
+
+    @FXML private VBox editorScreen;
+    @FXML private EditorScreenController editorScreenController;
 
     private final List<ToggleButton> navToggleButtons = new ArrayList<>();
     private ToggleGroup navToggleGroup;
     private boolean navCollapsed;
 
     private ResourceBundle bundle;
-    private ProjectSnapshot openSnapshot;
-    private boolean suppressGeneralSave;
 
     void setResourceBundle(ResourceBundle bundle) {
         this.bundle = Objects.requireNonNull(bundle, "bundle");
         setupNavigationBar();
+        if (summaryScreenController != null) {
+            summaryScreenController.applyResourceBundle(bundle);
+        }
     }
 
     private ResourceBundle bundle() {
         return Objects.requireNonNull(bundle, "ResourceBundle not set");
     }
 
-    @FXML
-    private void initialize() {
-        generalFields.clear();
-        if (generalTitleField != null) {
-            generalFields.addAll(
-                    List.of(
-                            generalTitleField,
-                            generalSubtitleField,
-                            generalSeriesField,
-                            generalVolumeField,
-                            generalGenreField,
-                            generalLicenseField,
-                            generalAuthorNameField,
-                            generalAuthorEmailField));
-            for (TextField tf : generalFields) {
-                tf.focusedProperty()
-                        .addListener(
-                                (o, was, now) -> {
-                                    if (Boolean.TRUE.equals(was) && Boolean.FALSE.equals(now)) {
-                                        saveGeneralFromForm();
-                                    }
-                                });
-            }
-        }
-        if (mainSplit != null) {
-            Platform.runLater(() -> mainSplit.setDividerPositions(0.55));
-        }
-    }
-
     void clearProjectUi() {
-        openSnapshot = null;
-        suppressGeneralSave = true;
-        try {
-            for (TextField tf : generalFields) {
-                tf.setText("");
-            }
-        } finally {
-            suppressGeneralSave = false;
+        generalScreenController.clear();
+        if (summaryScreenController != null) {
+            summaryScreenController.clear();
         }
-        if (entryList != null) {
-            entryList.getItems().clear();
-        }
+        editorScreenController.clear();
     }
 
     void applyLoadedProject(ProjectSnapshot snapshot) {
-        openSnapshot = snapshot;
-        if (entryList != null) {
-            entryList.getItems().clear();
-            entryList.getItems().setAll(snapshot.relativeEntryNames());
+        generalScreenController.applyOpenSnapshot(snapshot);
+        if (summaryScreenController != null) {
+            summaryScreenController.applyOpenSnapshot(snapshot);
         }
-        loadGeneralFromWorkspace();
+        editorScreenController.setEntryNames(snapshot.relativeEntryNames());
         if (navToggleGroup != null && !navToggleButtons.isEmpty()) {
             var sel = navToggleGroup.getSelectedToggle();
             if (sel != null && sel.getUserData() instanceof NavigationScreen ns) {
                 showScreen(ns);
             }
-        }
-    }
-
-    private void loadGeneralFromWorkspace() {
-        if (openSnapshot == null) {
-            return;
-        }
-        suppressGeneralSave = true;
-        try {
-            LoadGeneralResult r = JwmsServiceProvider.workspace().loadGeneral(openSnapshot);
-            GeneralMetadataDto dto =
-                    r instanceof LoadGeneralResult.Success s
-                            ? s.data()
-                            : GeneralMetadataDto.empty();
-            applyGeneralDto(dto);
-        } finally {
-            suppressGeneralSave = false;
-        }
-    }
-
-    private void applyGeneralDto(GeneralMetadataDto dto) {
-        if (generalTitleField != null) {
-            generalTitleField.setText(dto.title());
-        }
-        if (generalSubtitleField != null) {
-            generalSubtitleField.setText(dto.subtitle());
-        }
-        if (generalSeriesField != null) {
-            generalSeriesField.setText(dto.series());
-        }
-        if (generalVolumeField != null) {
-            generalVolumeField.setText(dto.volume());
-        }
-        if (generalGenreField != null) {
-            generalGenreField.setText(dto.genre());
-        }
-        if (generalLicenseField != null) {
-            generalLicenseField.setText(dto.license());
-        }
-        if (generalAuthorNameField != null) {
-            generalAuthorNameField.setText(dto.authorName());
-        }
-        if (generalAuthorEmailField != null) {
-            generalAuthorEmailField.setText(dto.authorEmail());
-        }
-    }
-
-    private GeneralMetadataDto readGeneralDtoFromForm() {
-        return new GeneralMetadataDto(
-                textOrEmpty(generalTitleField),
-                textOrEmpty(generalSubtitleField),
-                textOrEmpty(generalSeriesField),
-                textOrEmpty(generalVolumeField),
-                textOrEmpty(generalGenreField),
-                textOrEmpty(generalLicenseField),
-                textOrEmpty(generalAuthorNameField),
-                textOrEmpty(generalAuthorEmailField));
-    }
-
-    private static String textOrEmpty(TextField f) {
-        return f == null || f.getText() == null ? "" : f.getText();
-    }
-
-    private void saveGeneralFromForm() {
-        if (suppressGeneralSave || openSnapshot == null) {
-            return;
-        }
-        ManuscriptWorkspaceApi workspace = JwmsServiceProvider.workspace();
-        SaveResult result = workspace.saveGeneral(openSnapshot, readGeneralDtoFromForm());
-        if (result instanceof SaveResult.Failure) {
-            // Evitar spam em cada blur; falhas de I/O podem ser tratadas com logging futuro
         }
     }
 
@@ -217,7 +97,12 @@ public final class WorkspaceViewController {
                         (obs, oldVal, newVal) -> {
                             if (oldVal != null
                                     && oldVal.getUserData() == NavigationScreen.GENERAL) {
-                                saveGeneralFromForm();
+                                generalScreenController.flushSave();
+                            }
+                            if (oldVal != null
+                                    && oldVal.getUserData() == NavigationScreen.SUMMARY
+                                    && summaryScreenController != null) {
+                                summaryScreenController.flushSave();
                             }
                             if (newVal != null) {
                                 showScreen((NavigationScreen) newVal.getUserData());
@@ -248,13 +133,13 @@ public final class WorkspaceViewController {
 
     private Node screenNode(NavigationScreen screen) {
         return switch (screen) {
-            case GENERAL -> screenGeneral;
-            case SUMMARY -> screenSummary;
-            case CHARACTERS -> screenCharacters;
-            case PLOTS -> screenPlots;
-            case WORLD -> screenWorld;
-            case OUTLINE -> screenOutline;
-            case EDITOR -> screenEditor;
+            case GENERAL -> generalScreen;
+            case SUMMARY -> summaryScreen;
+            case CHARACTERS -> charactersScreen;
+            case PLOTS -> plotsScreen;
+            case WORLD -> worldScreen;
+            case OUTLINE -> outlineScreen;
+            case EDITOR -> editorScreen;
         };
     }
 
@@ -265,8 +150,11 @@ public final class WorkspaceViewController {
             n.setVisible(on);
             n.setManaged(on);
         }
-        if (mainSplit != null && screen == NavigationScreen.EDITOR) {
-            Platform.runLater(() -> mainSplit.setDividerPositions(0.55));
+        if (screen == NavigationScreen.EDITOR) {
+            editorScreenController.restoreDivider();
+        }
+        if (screen == NavigationScreen.SUMMARY && summaryScreenController != null) {
+            Platform.runLater(summaryScreenController::onShown);
         }
     }
 

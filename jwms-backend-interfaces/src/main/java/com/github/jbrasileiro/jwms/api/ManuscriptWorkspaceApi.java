@@ -15,4 +15,8 @@ public interface ManuscriptWorkspaceApi {
     LoadGeneralResult loadGeneral(ProjectSnapshot snapshot);
 
     SaveResult saveGeneral(ProjectSnapshot snapshot, GeneralMetadataDto metadata);
+
+    LoadSummaryResult loadSummary(ProjectSnapshot snapshot);
+
+    SaveResult saveSummary(ProjectSnapshot snapshot, SummaryMetadataDto metadata);
 }

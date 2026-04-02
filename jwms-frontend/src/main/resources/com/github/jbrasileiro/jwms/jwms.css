@@ -1,7 +1,13 @@
-/* JWMS — princípios UX/UI: skill de utilizador ~/.cursor/skills/jwms-javafx-ux-ui/SKILL.md */
+/* JWMS — CSS: ~/.cursor/skills/jwms-javafx-css/SKILL.md
+   UX/UI: jwms-javafx-ux-ui. Reutilizar classes; mudança mínima; ritmo 8·16·24; derive(-fx-…). */
 
 .jwms-app-root {
   -fx-font-family: "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+/* Cena principal: menu + área de conteúdo */
+.jwms-main {
+  -fx-background-color: -fx-background;
 }
 
 .jwms-content-pane {
@@ -22,19 +28,54 @@
   -fx-background-color: derive(-fx-base, 10%);
 }
 
+/* Welcome: hierarquia título > subtítulo > acções */
+.jwms-welcome-root {
+  -fx-max-width: 420;
+}
+
 .welcome-title {
-  -fx-font-size: 1.25em;
+  -fx-font-size: 1.35em;
   -fx-font-weight: bold;
+  -fx-padding: 0 0 8 0;
+}
+
+.jwms-welcome-root .screen-hint {
+  -fx-padding: 0 0 16 0;
+  -fx-text-alignment: center;
+}
+
+.jwms-welcome-button {
+  -fx-padding: 10 20 10 20;
+  -fx-background-radius: 6;
+  -fx-min-width: 240;
+}
+
+.jwms-welcome-button:hover {
+  -fx-background-color: derive(-fx-base, 8%);
+}
+
+.jwms-welcome-button:armed {
+  -fx-background-color: derive(-fx-base, -4%);
+}
+
+.jwms-welcome-button:default {
+  -fx-background-color: derive(-fx-accent, -18%);
+  -fx-text-fill: white;
+}
+
+.jwms-welcome-button:default:hover {
+  -fx-background-color: derive(-fx-accent, -10%);
+  -fx-text-fill: white;
 }
 
 .idle-split {
-  -fx-padding: 12;
+  -fx-padding: 16;
   -fx-background-color: -fx-background;
 }
 
 .split-pane.idle-split > .split-pane-divider {
   -fx-background-color: derive(-fx-box-border, -12%);
-  -fx-padding: 0 3 0 3;
+  -fx-padding: 0 4 0 4;
 }
 
 .idle-panel {
@@ -52,18 +93,23 @@
 }
 
 .nav-header-title {
-  -fx-font-size: 1.02em;
+  -fx-font-size: 1.05em;
   -fx-font-weight: bold;
 }
 
 .nav-collapse-button {
   -fx-min-width: 2em;
+  -fx-min-height: 2em;
   -fx-background-radius: 4;
   -fx-padding: 4 8 4 8;
 }
 
 .nav-collapse-button:hover {
   -fx-background-color: derive(-fx-base, 8%);
+}
+
+.nav-collapse-button:armed {
+  -fx-background-color: derive(-fx-base, -2%);
 }
 
 .nav-toggle-button {
@@ -86,9 +132,17 @@
   -fx-text-fill: white;
 }
 
+.nav-toggle-button:disabled {
+  -fx-opacity: 0.45;
+}
+
 .nav-icon-label {
   -fx-min-width: 1.5em;
   -fx-font-size: 1.05em;
+}
+
+.jwms-workspace {
+  -fx-background-color: -fx-background;
 }
 
 .jwms-workspace .split-pane > .split-pane-divider {
@@ -96,27 +150,34 @@
   -fx-padding: 0 2 0 2;
 }
 
-/* Não forçar -fx-padding: 0 em .screen-root — anula o padding definido no FXML */
-
+/* Título de ecrã > secção > corpo > hint */
 .screen-title {
-  -fx-font-size: 1.15em;
+  -fx-font-size: 1.2em;
   -fx-font-weight: bold;
-  -fx-padding: 4 0 12 0;
+  -fx-padding: 0 0 12 0;
+}
+
+.screen-section-label {
+  -fx-font-size: 1em;
+  -fx-font-weight: bold;
+  -fx-text-fill: derive(-fx-text-base-color, -8%);
+  -fx-padding: 0 0 8 0;
 }
 
 .screen-hint {
-  /* -fx-muted-text-color não resolve fora do tema Modena completo; usar derive do texto base */
   -fx-text-fill: derive(-fx-text-base-color, 35%);
   -fx-wrap-text: true;
+  -fx-padding: 4 0 0 0;
 }
 
 .general-section-title {
   -fx-font-weight: bold;
-  -fx-padding: 0 0 4 0;
+  -fx-font-size: 1.02em;
+  -fx-padding: 0 0 8 0;
 }
 
 .general-panel {
-  -fx-padding: 12;
+  -fx-padding: 16;
   -fx-background-color: derive(-fx-control-inner-background, 1%);
   -fx-background-radius: 8;
   -fx-border-color: derive(-fx-box-border, 20%);
@@ -124,6 +185,43 @@
   -fx-border-width: 1;
 }
 
+.general-panel .text-field:focused {
+  -fx-border-color: derive(-fx-accent, -25%);
+}
+
 .general-form-label {
-  -fx-padding: 0 2 0 0;
+  -fx-padding: 0 8 0 0;
+}
+
+/* Editor: lista com largura mínima usável */
+.jwms-entry-list {
+  -fx-min-width: 180;
+  -fx-min-height: 120;
+}
+
+/* Definições (diálogo) */
+.settings-dialog-root {
+  -fx-min-width: 320;
+}
+
+.settings-dialog-root .combo-box {
+  -fx-max-width: 400;
+}
+
+/* Resumo: formulário + split */
+.summary-screen .summary-split > .split-pane-divider {
+  -fx-background-color: derive(-fx-box-border, -10%);
+  -fx-padding: 0 2 0 2;
+}
+
+.summary-screen .text-area {
+  -fx-min-height: 120;
+}
+
+.summary-screen .summary-split-column-left {
+  -fx-min-width: 200;
+}
+
+.summary-screen .summary-split-column-right {
+  -fx-min-width: 240;
 }

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+	fx:controller="com.github.jbrasileiro.jwms.EditorScreenController"
+	spacing="0.0" styleClass="screen-root">
+	<padding>
+		<Insets bottom="16.0" left="16.0" right="16.0" top="16.0" />
+	</padding>
+	<Label styleClass="screen-title" text="%screen.editor">
+		<VBox.margin>
+			<Insets bottom="8.0" left="0.0" right="0.0" top="0.0" />
+		</VBox.margin>
+	</Label>
+	<SplitPane dividerPositions="0.55" fx:id="mainSplit" VBox.vgrow="ALWAYS">
+		<VBox spacing="8.0">
+			<padding>
+				<Insets bottom="8.0" left="8.0" right="8.0" top="8.0" />
+			</padding>
+			<Label styleClass="screen-section-label" text="%label.entries.relative" />
+			<ListView fx:id="entryList" styleClass="jwms-entry-list" VBox.vgrow="ALWAYS" />
+		</VBox>
+		<VBox spacing="8.0">
+			<padding>
+				<Insets bottom="8.0" left="8.0" right="8.0" top="8.0" />
+			</padding>
+			<Label styleClass="screen-hint" text="%editor.placeholder" wrapText="true" />
+		</VBox>
+	</SplitPane>
+</VBox>

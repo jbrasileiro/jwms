@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+	spacing="16.0" styleClass="screen-root">
+	<padding>
+		<Insets bottom="24.0" left="24.0" right="24.0" top="24.0" />
+	</padding>
+	<Label styleClass="screen-title" text="%screen.outline" />
+	<Label styleClass="screen-hint" text="%screen.outline.hint" />
+</VBox>

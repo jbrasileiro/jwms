@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.github.jbrasileiro.jwms.application.CreateManuscriptProjectUseCase.CreateManuscriptProjectResult;
 import com.github.jbrasileiro.jwms.application.OpenManuscriptProjectUseCase.OpenManuscriptProjectResult;
+import com.github.jbrasileiro.jwms.domain.manuscript.ManuscriptProjectPaths;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import org.junit.jupiter.api.Test;
@@ -35,6 +36,10 @@ class CreateManuscriptProjectUseCaseTest {
                 success.project()
                         .getRelativeEntryNames()
                         .contains("jwms/main/General.json"));
+        assertTrue(
+                success.project()
+                        .getRelativeEntryNames()
+                        .contains(ManuscriptProjectPaths.SUMMARY_JSON_ENTRY));
     }
 
     @Test

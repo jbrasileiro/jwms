@@ -54,6 +54,9 @@ public final class CreateManuscriptProjectUseCase {
             zos.putNextEntry(new ZipEntry(ManuscriptProjectPaths.GENERAL_JSON_ENTRY));
             zos.write("{}".getBytes(StandardCharsets.UTF_8));
             zos.closeEntry();
+            zos.putNextEntry(new ZipEntry(ManuscriptProjectPaths.SUMMARY_JSON_ENTRY));
+            zos.write("{}".getBytes(StandardCharsets.UTF_8));
+            zos.closeEntry();
         }
     }
 

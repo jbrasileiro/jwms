@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+	fx:controller="com.github.jbrasileiro.jwms.SummaryScreenController"
+	maxHeight="Infinity" maxWidth="Infinity"
+	spacing="16.0" styleClass="screen-root summary-screen">
+	<padding>
+		<Insets bottom="24.0" left="24.0" right="24.0" top="24.0" />
+	</padding>
+	<Label styleClass="screen-title" text="%screen.summary" />
+	<Label styleClass="screen-hint" text="%screen.summary.hint" wrapText="true" />
+	<GridPane hgap="8.0" vgap="8.0" styleClass="summary-form">
+		<columnConstraints>
+			<ColumnConstraints hgrow="NEVER" minWidth="80.0" />
+			<ColumnConstraints hgrow="ALWAYS" minWidth="120.0" />
+		</columnConstraints>
+		<Label styleClass="general-form-label" text="%summary.situation.label" GridPane.columnIndex="0" GridPane.halignment="RIGHT" GridPane.rowIndex="0" />
+		<ComboBox fx:id="situationCombo" editable="true" maxWidth="Infinity" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+		<Label styleClass="general-form-label" text="%summary.field.label" GridPane.columnIndex="0" GridPane.halignment="RIGHT" GridPane.rowIndex="1" />
+		<ComboBox fx:id="summaryModeCombo" maxWidth="Infinity" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+	</GridPane>
+	<StackPane minHeight="280.0" prefHeight="400.0" VBox.vgrow="ALWAYS">
+		<!-- Split primeiro: ao alternar modos, o painel de uma frase fica por cima quando visível -->
+		<SplitPane dividerPositions="0.42" fx:id="summarySplit" maxHeight="Infinity" maxWidth="Infinity" styleClass="summary-split">
+			<VBox maxHeight="Infinity" maxWidth="Infinity" spacing="8.0" styleClass="summary-split-column summary-split-column-left">
+				<padding>
+					<Insets bottom="8.0" left="8.0" right="8.0" top="8.0" />
+				</padding>
+				<Label fx:id="leftPanelTitle" styleClass="screen-section-label" />
+				<TextArea fx:id="leftTextArea" minHeight="120.0" prefHeight="220.0" wrapText="true" VBox.vgrow="ALWAYS" />
+			</VBox>
+			<VBox maxHeight="Infinity" maxWidth="Infinity" spacing="8.0" styleClass="summary-split-column summary-split-column-right">
+				<padding>
+					<Insets bottom="8.0" left="8.0" right="8.0" top="8.0" />
+				</padding>
+				<Label fx:id="rightPanelTitle" styleClass="screen-section-label" />
+				<TextArea fx:id="rightTextArea" minHeight="160.0" prefHeight="320.0" wrapText="true" VBox.vgrow="ALWAYS" />
+				<Label fx:id="wordCountLabel" styleClass="screen-hint" />
+			</VBox>
+		</SplitPane>
+		<VBox fx:id="sentenceOnlyPane" maxHeight="Infinity" maxWidth="Infinity" spacing="8.0" styleClass="summary-sentence-pane">
+			<padding>
+				<Insets bottom="8.0" left="8.0" right="8.0" top="8.0" />
+			</padding>
+			<Label fx:id="sentencePanelTitle" styleClass="screen-section-label" />
+			<TextArea fx:id="sentenceTextArea" minHeight="160.0" prefHeight="280.0" wrapText="true" VBox.vgrow="ALWAYS" />
+			<Label fx:id="sentenceWordCountLabel" styleClass="screen-hint" />
+		</VBox>
+	</StackPane>
+</VBox>

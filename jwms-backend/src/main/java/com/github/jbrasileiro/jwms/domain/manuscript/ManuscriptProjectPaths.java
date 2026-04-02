@@ -11,6 +11,9 @@ public final class ManuscriptProjectPaths {
     /** Metadados do ecrã Geral dentro do ZIP ou da pasta de conteúdo. */
     public static final String GENERAL_JSON_ENTRY = "jwms/main/General.json";
 
+    /** Metadados do ecrã Resumo dentro do ZIP ou da pasta de conteúdo. */
+    public static final String SUMMARY_JSON_ENTRY = "jwms/main/Summary.json";
+
     private ManuscriptProjectPaths() {}
 
     /**
